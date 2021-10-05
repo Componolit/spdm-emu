@@ -43,6 +43,17 @@ boolean create_socket(IN uint16 port_number, IN SOCKET *listen_socket)
 		return FALSE;
 	}
 
+        if (setsockopt(*listen_socket, SOL_SOCKET, SO_REUSEADDR, &(int){1}, sizeof(int)) < 0){
+		printf("Cannot configure server listen socket.  Error is 0x%x\n",
+#ifdef _MSC_VER
+		       WSAGetLastError()
+#else
+		       errno
+#endif
+		);
+		return FALSE;
+        }
+
 	zero_mem(&my_address, sizeof(my_address));
 	my_address.sin_port = htons((short)port_number);
 	my_address.sin_family = AF_INET;
